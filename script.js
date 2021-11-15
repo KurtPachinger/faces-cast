@@ -6,10 +6,10 @@ let sto = {
   src: document.getElementById('chromaImg'),
   roi: document.getElementById('roi'),
   mask: document.getElementById('mask'),
-	PYR: 0.5,
-	batch: 0,
-	swatch: {},
-	orient: function(file) {
+  PYR: 0.5,
+  batch: 0,
+  swatch: {},
+  orient: function(file) {
     sto.src.parentElement.removeChild(sto.src);
 
     loadImage(file, (img, data) => {
@@ -105,7 +105,7 @@ let sto = {
     });
 
   },
-	resize: function(obj, prc, centered) {
+  resize: function(obj, prc, centered) {
     if (obj.constructor.name === "Mat") {
       // if !prc, Mat size equals source (strict)
       let dec = (prc) ? new cv.Size(obj.cols * prc, obj.rows * prc) : size;
@@ -320,6 +320,7 @@ let cast = {
         console.info('eyes', eyes.size());
 
         var eyes_ltr = ltr(eyes);
+				let hash = 0;
         for (let j = 0; j < eyes_ltr.length; ++j) {
           let eye = eyes_ltr[j];
 
@@ -331,16 +332,17 @@ let cast = {
           roi.height = eye.height;
           roi.x = face.x + eye.x;
           roi.y = face.y + eye.y;
-          roi.name = 'eye_' + j;
+          roi.name = 'eye_' + hash;
           await cast.palette(roi, 3);
 
           roi.width = eye.width * 0.33;
           roi.height = eye.height * 0.33;
           roi.x = face.x + eye.x + eye.width * 0.33;
           roi.y = face.y + eye.y + eye.height * 0.33;
-          roi.name = 'iris_' + j;
+          roi.name = 'iris_' + hash;
           await cast.palette(roi, 3);
 
+					hash++;
         }
 
         sto.delete(roiGray);
@@ -375,6 +377,7 @@ let cast = {
   },
   layer: function(idx, name, mat) {
     name = idx + name;
+		
     let curr = sto.mask.querySelector('[data-batch=i' + sto.batch + ']');
     let prev = sto.mask.querySelector('[data-batch=i' + (sto.batch - 1) + ']') || document;
 
@@ -397,6 +400,9 @@ let cast = {
 
     let title = document.createElement('label');
     title.setAttribute('data-id', name);
+		if(name.includes('skin')){
+			title.setAttribute('data-skintone', sto.swatch[name].skintone);
+		}
 
     // specific/existing, or default
     let recolor = prev.querySelector('#' + name) || document.querySelector('#default input[data-id=' + name + ']') || document.querySelector('#default input[data-id=' + name.replace(/(^f\d+_)|(_\d+)/g, "") + ']');
@@ -420,6 +426,7 @@ let cast = {
     if (name.includes('bg')) {
       color.disabled = true;
     } // bg shared (2/2)
+		
 
     title.appendChild(color);
     zone.appendChild(title);
@@ -436,10 +443,20 @@ let cast = {
       //cols += '<th>' + '<span>' + sto.swatch[rect.idx + name].count + '</span></th>';
       for (let k = 0; k < cluster.length; k++) {
         let d = cluster[k];
-        cols += '<td width="' + ((d.count / sto.swatch[name].count) * 100).toFixed(3) + '%"';
+				
+				let color = "#000";
+        let hue = d.rgb.r +  d.rgb.g +  d.rgb.b;
+        if (hue < 384) {
+          color = "#fff";
+        }
+				
+				let distr = ((d.count / sto.swatch[name].count) * 100).toFixed(3);
+				distr = isFinite(distr) ? distr : "";
+        cols += '<td width="' + distr + '%"';
         cols += 'style="background-color:rgb(' + d.rgb.r + ',' + d.rgb.g + ',' + d.rgb.b + ')"';
-        cols += 'data-id="' + name + k + '"';
-        cols += '>' + d.count + '</td>';
+        cols += 'data-id="' + name + k + '">';
+        cols += '<span style="color:'+color+';">' + d.count + '</span>';
+				cols += '</td>';
       }
     }
     table.innerHTML = cols;
@@ -449,14 +466,14 @@ let cast = {
     table.addEventListener('mouseout', highlight);
   },
   segment: async function(face) {
-		// note: a.k.a. chroma-key garbage matte
+    // note: a.k.a. chroma-key garbage matte
 
-		if (document.getElementById('abort').checked) {
+    if (document.getElementById('abort').checked) {
       return;
     }
 
     await sto.update(face.name);
-		console.log('%c' + face.idx + ' segment', 'background:#0080ff;');
+    console.log('%c' + face.idx + ' segment', 'background:#0080ff;');
 
     face = sto.resize(face, sto.PYR);
     let tmp = sto.resize(sto.var.src.clone(), sto.PYR);
@@ -467,6 +484,7 @@ let cast = {
     let kmeans = [];
     let grid = tmp.clone();
     const CELL = 9;
+		const card = ['NW','NE','SW','SE'];
     cv.resize(grid, grid, new cv.Size(CELL, CELL), 0, 0, cv.INTER_NEAREST);
     for (let i = 0; i < CELL; i++) {
       if (i !== 0 && i !== CELL - 1) {
@@ -478,13 +496,15 @@ let cast = {
         }
         let rgb = grid.ucharPtr(i, j);
         kmeans.push({
-          count: 100 / CELL,
+          //count: +(100 / CELL).toFixed(2),
+					count: card[0],
           rgb: {
             r: rgb[0],
             g: rgb[1],
             b: rgb[2]
           }
         });
+				card.shift();
       }
     }
     grid.delete()
@@ -557,20 +577,20 @@ let cast = {
       kmeans: kmeans,
       depth: face.depth,
       mat: mask,
-			face: face
+      face: face
       //to: key blocks composite of multiple faces
     };
 
     cast.layer(face.idx, face.name, mask);
 
     cast.pyramid(face);
-		
-		// nose depth
+
+    // nose depth
     C = new cv.Point(face.x + (face.width * 0.5), face.y + (face.height * 0.5));
     cv.line(sto.var.bmp,
-       new cv.Point(C.x, C.y - (face.height * 0.125)),
-       new cv.Point(C.x, C.y + (face.height * 0.1)),
-       [255, 255, 255, 255], RAD * 3, 4);
+      new cv.Point(C.x, C.y - (face.height * 0.125)),
+      new cv.Point(C.x, C.y + (face.height * 0.1)),
+      [255, 255, 255, 255], RAD * 3, 4);
 
   },
   palette: async function(rect, lim) {
@@ -594,7 +614,6 @@ let cast = {
 
     let tmp = sto.resize(sto.var.src.clone(), sto.PYR);
     rect = sto.resize(rect, sto.PYR);
-
     //roi for KMEANS palette
     let mat = tmp.roi(rect);
     let sample = new cv.Mat(mat.rows * mat.cols, 3, cv.CV_32F);
@@ -655,20 +674,31 @@ let cast = {
     rect = sto.resize(rect, 1 / sto.PYR);
 
     if (name === 'skin') {
-     swatch.skintone = 1;
+      swatch.skintone = 1;
     }
 
     //sort cluster counts desc
     function sortNumber(a, b) {
-      let sv = (a.skintone==1) ? 's' : 'v';
+      let sv = (a.skintone == 1) ? 's' : 'v';
       return a.hsv[sv] - b.hsv[sv];
     }
 
     cluster.sort(sortNumber);
     if (name === 'skin') {
+			//sat = [0=>255] [white=>color]
+			//val = [0=>255] [black=>color]
       // if skin midtone dark, sort by value
-      if (((cluster[1].hsv.s + cluster[2].hsv.s) / 2 > 128) &&
-        ((cluster[1].hsv.v + cluster[2].hsv.v) / 2 < 128)) {
+			let sat = 0;
+			let val = 0;
+			let lim = Math.round(cluster.length/2)
+      for(var i = 0; i < lim; i++) {
+       sat += cluster[i].hsv.s;
+			 val += cluster[i].hsv.v;
+      }
+      sat = sat / lim;
+			val = val / lim;
+			
+      if (sat > 128 || val < 96) {
         swatch.skintone = 0;
         cluster.sort(sortNumber);
       }
@@ -682,7 +712,7 @@ let cast = {
     if (diff.fit === false || (diff.fit && name === 'hair')) {
       //pad and cull outliers, affects mask growth
       let pad = (name === 'lips' || name.includes('eye')) ? 16 : 48;
-      let min = (name == 'skin') ? (sto.swatch[rect.idx+'skin'].skintone * 64) : 0;
+      let min = (name == 'skin') ? (sto.swatch[rect.idx + 'skin'].skintone * 64) : 0;
       let off = {
         lo: (cluster[0].hsv.v >= 32 + min) ? cluster[0].rgb : cluster[1].rgb,
         hi: cluster[cluster.length - 2].rgb
@@ -816,9 +846,11 @@ let cast = {
         //console.log('hsv', hue, sat, val, 'prc', prc, 'int_rad', int_rad);
 
         //mark if similar enough hsv
-        let bandpass = hsv_cast.s > 8 && hsv_cast.v > 16;
-        if (bandpass && (prc > 0.33 ||
-            (hue > 16 && (sat > 48 || val > 48)))) {
+        let bandpass = hsv_cast.s < 16 || hsv_cast.v < 16;
+        if (!bandpass &&
+          (hue > 8 || prc > 0.25) &&
+          (sat > 32 || val > 32)
+        ) {
           cv.circle(mask, C, int_rad, [255, 255, 255, 255], -1, 4, 0);
           // offset inverse stroke breaks continuity of small periphary clusters
           cv.circle(mask, C, int_rad / (1 - prc) * RAD, [0, 0, 0, 255], int_rad / 4, 8, 0); //15-20x?
@@ -840,8 +872,9 @@ let cast = {
       let area = (cv.contourArea(cnt, false) / area_roi);
       // cull by size and location
       // minimum area raised post-sort to view candidates but limit success
-      if ((area > 0.001 || (rect.name === 'hair' && area > 0.20)) &&
-        (area < 0.66 || rect.name === 'hair')) {
+      if (
+        (rect.name === 'hair' && area > 0.020) ||
+        (rect.name !== 'hair' && area > 0.001 && area < 0.66)) {
         let M = cv.moments(cnt, false);
         let cx = M.m10 / M.m00;
         let cy = M.m01 / M.m00;
@@ -889,9 +922,11 @@ let cast = {
 
       }
     }
-    diff.fit = (cast.length && cast[0].area > 0.01) ? true : 0;
+    diff.fit = (cast.length && cast[0].area > 0.005) ? true : 0;
     console.log(rect.name + ' cast', cast, diff.fit);
-		if(!diff.fit){console.warn(rect.name + ' no fit')}
+    if (!diff.fit) {
+      console.warn(rect.name + ' no fit')
+    }
 
     hierarchy.delete();
     contours.delete();
@@ -927,25 +962,33 @@ let cast = {
 
     // note: effectively an roi, and clips tiered output
     // todo: max all ~3x head size
-		//console.warn(face)
-		let all = rect;
-		if(!(name.includes('eye') || name.includes('iris'))){
-			let face = sto.swatch[rect.idx+'bg'].face;
-		  let pad = face.width;
-		  let X1 = face.x - pad;
-		  let Y1 = face.y - pad;
-		  let X2 = face.width*3;
-		  let Y2 = face.height*3;
+    //console.warn(face)
+    let all = rect;
+    if (!(name.includes('eye') || name.includes('iris'))) {
+      let face = sto.swatch[rect.idx + 'bg'].face;
+      let pad = face.width;
+      let X1 = face.x - pad;
+      let Y1 = face.y - pad;
+      let X2 = face.width * 3;
+      let Y2 = face.height * 3;
 
-		  if(name=='bg'||X1<0){X1=0;}
-		  if(name=='bg'||Y1<0){Y1=0;}
-		  if(name=='bg'||X2>size.width){X2=size.width;}
-		  if(name=='bg'||Y2>size.height){Y2=size.height;}
-			
-			all = new cv.Rect(X1, Y1, X2, Y2);
-		}
+      if (name == 'bg' || X1 < 0) {
+        X1 = 0;
+      }
+      if (name == 'bg' || Y1 < 0) {
+        Y1 = 0;
+      }
+      if (name == 'bg' || X2 > size.width) {
+        X2 = size.width;
+      }
+      if (name == 'bg' || Y2 > size.height) {
+        Y2 = size.height;
+      }
 
-		let skintone = (name!='bg') ? sto.swatch[rect.idx+'skin'].skintone : null;
+      all = new cv.Rect(X1, Y1, X2, Y2);
+    }
+
+    let skintone = (name != 'bg') ? sto.swatch[rect.idx + 'skin'].skintone : null;
     let int = 2;
     for (let i = all.y; i < all.y + all.height; i += int) {
       for (let j = all.x; j < all.x + all.width; j += int) {
@@ -1438,53 +1481,69 @@ function hexToRGB(h) {
   };
 }
 
+
+
 function Pixi(complete) {
   console.log('PIXI', complete);
-
-  if (Object.keys(sto.swatch).length === 0) {
-    //return;
+  let WEBGL = PIXI.utils.isWebGLSupported();
+  if (!WEBGL) {
+    //no driver, low resources... needs legacy canvas
+    alert('no WEBGL = no PIXI depth map');
   }
 
-  if (!!PIXI && !app) {
+  //if (Object.keys(sto.swatch).length === 0) {
+    //return;
+  //}
+	
+	//cleanup START
+	// note: Pixi 5+ was giving me trouble with repeated instances, in terms of vertical position and memory.
+	let els = document.querySelectorAll('#view .abs');
+	for(let i=0;i<els.length;i++){
+		let el = els[i];
+	  el.parentNode.removeChild(el);
+	}
+	if(ploader!=undefined){
+	for (let key in ploader.resources) {
+    let tex = ploader.resources[key];
+    tex && tex.texture && tex.texture.baseTexture.destroy();
+    ploader.destroy(key);
+  }
+		ploader.reset();
+	}
+  if(foreground!=undefined){
+  foreground.removeChildren();
+	}
+	//cleanup END
+
+
     cOutput = document.getElementById('view');
-    app = new PIXI.Application({
+    app = new PIXI.autoDetectRenderer({
       width: size.width,
       height: size.height
     });
     cOutput.appendChild(app.view);
     app.view.classList.add('abs');
     app.view.id = 'inpaint_pixi';
-    app.renderer.view.style.touchAction = 'auto';
     // asset pointer
     stage = new PIXI.Container();
     foreground = new PIXI.Container();
     stage.addChild(foreground);
     ploader = new PIXI.Loader();
-    //interaction
+
     cOutput.onpointermove = function(e) {
+      //parallax
       mousex = e.clientX;
       mousey = e.clientY;
     };
     animate();
-  } else {
-    // asset cleanup
-    app.view.width = size.width;
-    app.view.height = size.height;
-    for (let key in ploader.resources) {
-      let tex = ploader.resources[key];
-      tex && tex.texture && tex.texture.baseTexture.destroy(); //?
-      ploader.destroy(key);
-    }
-    ploader.reset();
-    foreground.removeChildren();
-  }
+
 
   mousex = (cOutput.offsetWidth / 2) + cOutput.offsetLeft;
   mousey = (cOutput.offsetHeight / 2) + cOutput.offsetTop;
   //asset update
   ploader.add('image' + sto.batch, document.getElementById('chroma').toDataURL('image/jpeg', 1.0));
   ploader.add('depth' + sto.batch, document.getElementById('depth').toDataURL('image/jpeg', 0.5));
-  ploader.on('complete', startMagic);
+  ploader.onComplete.add(startMagic)
   ploader.load();
 
   function startMagic() {
@@ -1503,7 +1562,7 @@ function animate() {
     f.scale.y = (cOutput.offsetHeight / 2 - (mousey - cOutput.offsetTop)) / 10;
     image.addChild(d);
     d.renderable = false;
-    app.renderer.render(stage);
+    app.render(stage);
   }
   requestAnimationFrame(animate);
 }
