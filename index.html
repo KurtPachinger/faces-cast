@@ -1,14 +1,4 @@
-<!DOCTYPE html>
-<html lang="en" class="load all">
-<head>
-  <meta charset="UTF-8">
-  <title>CodePen - Recolor Skin, Lips, Hair... and Info</title>
-  <base target="_blank"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="./style.css">
-
-</head>
-<body>
-<!-- partial:index.partial.html -->
+<button id="help">Help</button>
 <main>
   <p class="err" id="errorMessage"></p>
 	<div class="w50">
@@ -39,6 +29,7 @@
     </div>
 		<div class="w50" id="view">
     <canvas id="chroma"></canvas>
+		<!--<canvas id="inpaint_pixi" class="abs"></canvas>-->
 		</div>
   </section>
 
@@ -48,7 +39,7 @@
 <div id="wheel" class="w50 aligncenter"></div>
 
 	<details><pre>
-  <li class="w100"><a href="//techcrunch.com/2019/06/18/youtubes-new-ar-beauty-try-on-lets-viewers-virtually-try-on-makeup-while-watching-video-reviews/">YouTube AR Beauty Try-On</a></li><li><a href="//app.lucidchart.com/documents#?folder_id=215746264&preview=215746264">lucidchart</a>
+  <li class="w100"><a href="//techcrunch.com/2019/06/18/youtubes-new-ar-beauty-try-on-lets-viewers-virtually-try-on-makeup-while-watching-video-reviews/">YouTube AR Beauty Try-On</a></li><li><a href="https://lucid.app/documents/embeddedchart/9d72fa85-b820-4ce7-abdf-b7628f31e02c">lucidchart</a>
 1. upload photo (orient via loadimage)
 2. detect face(s) - set relative unit
  A. get foreground/background (grabcut)
@@ -61,11 +52,101 @@
 5. bar chart (normal) and hsl color wheel (d3)
 	</pre></details>
 </main>
-<!-- partial -->
-  <script src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/697675/utils.js'></script>
-<script src='https://rawgit.com/blueimp/JavaScript-Load-Image/master/js/load-image.all.min.js'></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/d3/5.16.0/d3.min.js'></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.2.4/pixi.min.js'></script><script  src="./script.js"></script>
+	
 
-</body>
-</html>
+<script type="text/javascript">
+let driver;
+// Start the introduction
+document.querySelector('#help')
+	.addEventListener('click', function (e) {
+	e.preventDefault();
+	e.stopPropagation();
+	
+	if(driver==undefined){
+	  // lazy loading Help
+	  let css = document.createElement('link');
+	  css.href = 'https://unpkg.com/driver.js/dist/driver.min.css';
+	  css.rel = 'stylesheet';
+	  document.head.appendChild(css);
+	  let js = document.createElement('script');
+	  js.src = 'https://unpkg.com/driver.js/dist/driver.min.js';
+	  js.onload = function(){
+
+	
+      driver = new Driver();
+      // Define the steps for introduction
+      driver.defineSteps([
+        {
+        element: '#photo',
+        popover: {
+          title: 'Choose file [image or photo]',
+          description: 'Apply settings to faces in image. Progress displays with an &Cross; to abort. There is no dedicated update button.',
+        }
+        },
+        {
+        element: '#maxsize',
+        popover: {
+          title: 'Scale resolution  [slider]',
+          description: 'Lower setting completes faster. Higher setting finds more detail.',
+        }
+        },
+        {
+        element: '#default',
+        popover: {
+          title: 'Default color [input group]',
+          description: 'Multiply masks of matching id with color, or green for none. The background applies once to a composite, and is blurred.',
+        }
+        },
+        {
+        element: '#edit',
+        popover: {
+          title: 'Input [image]',
+          description: 'Feature masks\' sample areas. Hover cycles composites of color and depth.',
+        }
+        },
+        {
+        element: '#view',
+        popover: {
+          title: 'Output [image]',
+          description: 'Recolored image with interactive depth map.',
+        }
+        },
+        {
+        element: '#col',
+        popover: {
+          title: 'Zoom masks [slider]',
+          description: 'Adjust size of masks to inspect details.',
+        }
+        },
+        {
+        element: '#mask',
+        popover: {
+          title: 'Masks and palettes',
+          description: 'Hover color palette bar chart to highlight corresponding data on color wheel. <br />Masks show pixels within color range. Hover for mask probability refined by feature relationships. Click mask to pick new color.',
+        }
+        },
+        {
+        element: '#eigen',
+        popover: {
+          title: 'Eigenface',
+          description: 'Difference of multiple faces.',
+        }
+        },
+        {
+        element: '#wheel',
+        popover: {
+          title: 'Color wheel',
+          description: 'HSV normalized distribution.',
+        }
+        }
+      ]);
+		  driver.start();
+	}
+	document.head.appendChild(js);
+		
+	}else{
+		driver.start();
+	}
+	
+});
+</script>
