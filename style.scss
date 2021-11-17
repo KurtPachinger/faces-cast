@@ -1,163 +1,163 @@
 html,
 :before {
-	font-family: monospace;
+  font-family: monospace;
 }
 html,
 body {
-	margin: 0.25em;
-	padding: 0;
+  margin: 0.25em;
+  padding: 0;
 }
 html {
-	font-size: 0.75em;
-	overflow-y: scroll;
+  font-size: 0.75em;
+  overflow-y: scroll;
 }
 ::-webkit-scrollbar {
-	width: 1em;
+  width: 1em;
 }
 ::-webkit-scrollbar-track {
-	background-color: #c0c0c0;
+  background-color: #c0c0c0;
 }
 ::-webkit-scrollbar-thumb {
-	background-color: #808080;
+  background-color: #808080;
 }
 * {
-	box-sizing: border-box;
-	margin: 0;
-	padding: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 hr {
-	margin: 0;
-	border: none;
-	border-top-width: 0.25rem;
-	border-top-style: solid;
+  margin: 0;
+  border: none;
+  border-top-width: 0.25rem;
+  border-top-style: solid;
 }
 .hide {
-	display: none;
+  display: none;
 }
 .scroll {
-	overflow: hidden;
-	overflow-y: scroll;
-	max-height: 32em;
-	padding-left: 1em;
-	resize: vertical;
+  overflow: hidden;
+  overflow-y: scroll;
+  max-height: 32em;
+  padding-left: 1em;
+  resize: vertical;
 }
 
 main {
-	margin: 0 auto;
-	max-width: 96em;
-	img,
-	canvas,
-	input {
-		width: 100%;
-		display: block;
-	}
-	input[type="checkbox"] {
-		width: initial;
-	}
-	canvas {
-		background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIElEQVQYV2Nk+M/QwMDI0MAABYxgGkkQIoAkiBCACgIABm4HhEEa4PgAAAAASUVORK5CYII=");
-	}
+  margin: 0 auto;
+  max-width: 96em;
+  img,
+  canvas,
+  input {
+    width: 100%;
+    display: block;
+  }
+  input[type="checkbox"] {
+    width: initial;
+  }
+  canvas {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIElEQVQYV2Nk+M/QwMDI0MAABYxgGkkQIoAkiBCACgIABm4HhEEa4PgAAAAASUVORK5CYII=");
+  }
 }
 
 .load {
-	#chromaImg,
-	#roi,
-	.ui {
-		display: block;
-	}
-	canvas,
-	.taint {
-		display: none;
-	}
+  #chromaImg,
+  #roi,
+  .ui {
+    display: block;
+  }
+  canvas,
+  .taint {
+    display: none;
+  }
 
-	#edit:before,
-	section:before {
-		content: "";
-		image-rendering: pixelated;
-		-ms-interpolation-mode: nearest-neighbor;
-		background: url("data:image/gif;base64,R0lGODlhBgADAPABAICAgAAAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQJFAABACwAAAAABgADAAACBkxggGfMBQAh+QQJFAABACwAAAAABgADAAACBQximHZbACH5BAUUAAEALAAAAAAGAAMAAAIFRGKXiVoAOw==")
-			repeat-x top/1.5em;
-		position: fixed;
-		width: 100%;
-		//height :100%;
-		//left:0;
-		padding: 0.5em;
-		font-size: 3rem;
-		text-shadow: 0.05em 0.05em 0em #000, -0.05em -0.05em 0em #f00,
-			-0.05em 0.05em 0em #0f0, 0.05em -0.05em 0em #00f;
-		line-height: 0;
-		mix-blend-mode: difference;
-		color: #fff;
-		z-index: 2;
-	}
-	section:before {
-		content: attr(data-load);
-		background: none;
-		mix-blend-mode: normal;
-		z-index: 3;
-	}
+  #edit:before,
+  section:before {
+    content: "";
+    image-rendering: pixelated;
+    -ms-interpolation-mode: nearest-neighbor;
+    background: url("data:image/gif;base64,R0lGODlhBgADAPABAICAgAAAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQJFAABACwAAAAABgADAAACBkxggGfMBQAh+QQJFAABACwAAAAABgADAAACBQximHZbACH5BAUUAAEALAAAAAAGAAMAAAIFRGKXiVoAOw==")
+      repeat-x top/1.5em;
+    position: fixed;
+    width: 100%;
+    //height :100%;
+    //left:0;
+    padding: 0.5em;
+    font-size: 3rem;
+    text-shadow: 0.05em 0.05em 0em #000, -0.05em -0.05em 0em #f00,
+      -0.05em 0.05em 0em #0f0, 0.05em -0.05em 0em #00f;
+    line-height: 0;
+    mix-blend-mode: difference;
+    color: #fff;
+    z-index: 2;
+  }
+  section:before {
+    content: attr(data-load);
+    background: none;
+    mix-blend-mode: normal;
+    z-index: 3;
+  }
 }
 
 .ui {
-	z-index: 4;
-	position: fixed;
-	font-size: 6rem;
-	color: red;
-	margin: -4rem 0 0 -2rem;
-	text-shadow: 0 0.05em #000;
-	#abort {
-		display: none;
-	}
+  z-index: 4;
+  position: fixed;
+  font-size: 6rem;
+  color: red;
+  margin: -4rem 0 0 -2rem;
+  text-shadow: 0 0.05em #000;
+  #abort {
+    display: none;
+  }
 }
 #roi {
-	z-index: 3;
-	pointer-events: none;
+  z-index: 3;
+  pointer-events: none;
 }
 #color {
-	z-index: 2;
-	mix-blend-mode: multiply;
-	filter: blur(0.33em);
-	transition-delay: 2s;
+  z-index: 2;
+  mix-blend-mode: multiply;
+  filter: blur(0.33em);
+  transition-delay: 2s;
 }
 #depth {
-	z-index: 1;
-	opacity: 0;
+  z-index: 1;
+  opacity: 0;
 }
 #edit:hover canvas:not(#chromaImg) {
-	opacity: 0;
-	&#depth {
-		opacity: 1;
-		transition-delay: 4s;
-	}
+  opacity: 0;
+  &#depth {
+    opacity: 1;
+    transition-delay: 4s;
+  }
 }
 
 .abs {
-	position: absolute;
-	background-image: none;
-	left: 0;
-	top: 0;
-	width: 100%;
-	height: 100%;
-	transition: opacity 0.25s;
+  position: absolute;
+  background-image: none;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  transition: opacity 0.25s;
 }
 .w13 {
-	width: 12.5%;
+  width: 12.5%;
 }
 .w25 {
-	width: 25%;
+  width: 25%;
 }
 .w33 {
-	width: 33.33%;
+  width: 33.33%;
 }
 .w50 {
-	width: 50%;
+  width: 50%;
 }
 .w66 {
-	width: 66.66%;
+  width: 66.66%;
 }
 .w100 {
-	width: 100%;
-	clear: both;
+  width: 100%;
+  clear: both;
 }
 
 .w13,
@@ -165,203 +165,203 @@ main {
 .w33,
 .w50,
 .w66 {
-	position: relative;
-	float: left;
-	&.alignleft {
-		float: left;
-	}
-	&.alignright {
-		float: right;
-	}
-	&.aligncenter {
-		float: none;
-		margin-left: auto;
-		margin-right: auto;
-	}
+  position: relative;
+  float: left;
+  &.alignleft {
+    float: left;
+  }
+  &.alignright {
+    float: right;
+  }
+  &.aligncenter {
+    float: none;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
 #inpaint {
-	width: initial;
-	display: inline-block;
-	vertical-align: middle;
+  width: initial;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 table.bar {
-	table-layout: fixed;
-	clear: both;
-	width: 100%;
-	height: 1.25rem;
-	border-collapse: collapse;
-	position: relative;
-	z-index: 2;
-	tr,
-	td,
-	th {
-		text-align: left;
-	}
-	th {
-		width: 33.33%;
-		font-weight: normal;
-		span {
-			float: right;
-			text-align: right;
-		}
-	}
-	td {
-		border-right: solid 1px #fff;
-		color: transparent;
-		&:last-of-type {
-			border-right-width: 0;
-		}
-		&:hover {
-			color: #000;
-			//text-shadow:0 .03em #fff;
-		}
-	}
+  table-layout: fixed;
+  clear: both;
+  width: 100%;
+  height: 1.25rem;
+  border-collapse: collapse;
+  position: relative;
+  z-index: 2;
+  tr,
+  td,
+  th {
+    text-align: left;
+  }
+  th {
+    width: 33.33%;
+    font-weight: normal;
+    span {
+      float: right;
+      text-align: right;
+    }
+  }
+  td {
+    border-right: solid 1px #fff;
+    color: transparent;
+    &:last-of-type {
+      border-right-width: 0;
+    }
+    &:hover {
+      color: #000;
+      //text-shadow:0 .03em #fff;
+    }
+  }
 }
 
 fieldset {
-	border: 0;
-	border-top: 0.2rem solid #808080;
-	margin: 0;
-	padding: 0.25em 0;
-	margin: 0.25em 0;
+  border: 0;
+  border-top: 0.2rem solid #808080;
+  margin: 0;
+  padding: 0.25em 0;
+  margin: 0.25em 0;
 }
 #default input[type="color"] {
-	transform: scale(1.5, 3);
+  transform: scale(1.5, 3);
 }
 input[type="color"] {
-	appearance: none;
-	position: relative;
-	transform: scale(1.5, 1.5);
-	border: 0;
-	height: 1.5rem;
+  appearance: none;
+  position: relative;
+  transform: scale(1.5, 1.5);
+  border: 0;
+  height: 1.5rem;
 }
 label {
-	position: relative;
+  position: relative;
 }
 label[data-id]:before {
-	content: attr(data-id);
-	position: absolute;
-	padding: 0em 0.5em;
-	z-index: 1;
-	display: block;
-	width: 100%;
+  content: attr(data-id);
+  position: absolute;
+  padding: 0em 0.5em;
+  z-index: 1;
+  display: block;
+  width: 100%;
 }
 label[data-skintone]:after {
-	content: attr(data-skintone);
-	position: absolute;
-	bottom: 0;
-	right: 0;
-	z-index: 1;
-	background: white;
+  content: attr(data-skintone);
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 1;
+  background: white;
 }
 
 #default label,
 #mask label {
-	overflow: hidden;
-	width: 20%;
-	cursor: pointer;
-	display: inline-block;
-	float: left;
+  overflow: hidden;
+  width: 20%;
+  cursor: pointer;
+  display: inline-block;
+  float: left;
 }
 
 #mask {
-	canvas {
-		display: block;
-	}
-	max-height: 28rem;
-	&.col0 .cell {
-		flex: 0 1 12.5%;
-		width: 12.5%;
-	}
-	&.col1 .cell {
-		flex: 0 1 25%;
-		width: 25%;
-	}
-	&.col2 .cell {
-		flex: 0 1 50%;
-		width: 50%;
-	}
+  canvas {
+    display: block;
+  }
+  max-height: 28rem;
+  &.col0 .cell {
+    flex: 0 1 12.5%;
+    width: 12.5%;
+  }
+  &.col1 .cell {
+    flex: 0 1 25%;
+    width: 25%;
+  }
+  &.col2 .cell {
+    flex: 0 1 50%;
+    width: 50%;
+  }
 
-	.row {
-		display: flex;
-		flex-wrap: wrap;
-		overflow: hidden;
-	}
-	.cell {
-		flex: 0 1 12.5%;
-		width: 12.5%;
-		position: relative;
-		float: left;
-		padding-top: 1.5rem;
-		.hover {
-			position: absolute;
-			opacity: 0;
-		}
-		&:hover .hover {
-			opacity: 1;
-		}
-		input {
-			height: 100%;
-			mix-blend-mode: multiply;
-			z-index: 1;
-		}
-		label,
-		input,
-		.hover {
-			position: absolute;
-			bottom: 0;
-		}
-	}
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    overflow: hidden;
+  }
+  .cell {
+    flex: 0 1 12.5%;
+    width: 12.5%;
+    position: relative;
+    float: left;
+    padding-top: 1.5rem;
+    .hover {
+      position: absolute;
+      opacity: 0;
+    }
+    &:hover .hover {
+      opacity: 1;
+    }
+    input {
+      height: 100%;
+      mix-blend-mode: multiply;
+      z-index: 1;
+    }
+    label,
+    input,
+    .hover {
+      position: absolute;
+      bottom: 0;
+    }
+  }
 
-	label {
-		width: 100%;
-		height: 100%;
-	}
+  label {
+    width: 100%;
+    height: 100%;
+  }
 }
 
 //d3 wheel
 svg {
-	path.area {
-		fill: rgba(255, 255, 255, 0.5);
-		mix-blend-mode: overlay;
-	}
-	line,
-	.point {
-		stroke: #fff;
-		stroke-width: 0.5;
-		stroke-linecap: round;
-	}
-	.point {
-		stroke-opacity: 0.5;
-		fill-opacity: 0.5;
-		&.active {
-			fill-opacity: 1;
-			stroke-opacity: 1;
-			animation: 0.25s linear 0s infinite alternate attn;
-		}
-	}
-	@keyframes attn {
-		to {
-			stroke: #000;
-		}
-	}
-	text {
-		font-size: 1em;
-		text-anchor: middle;
-	}
-	.Spokes {
-		circle {
-			fill: rgba(255, 255, 255, 0);
-		}
-	}
+  path.area {
+    fill: rgba(255, 255, 255, 0.5);
+    mix-blend-mode: overlay;
+  }
+  line,
+  .point {
+    stroke: #fff;
+    stroke-width: 0.5;
+    stroke-linecap: round;
+  }
+  .point {
+    stroke-opacity: 0.5;
+    fill-opacity: 0.5;
+    &.active {
+      fill-opacity: 1;
+      stroke-opacity: 1;
+      animation: 0.25s linear 0s infinite alternate attn;
+    }
+  }
+  @keyframes attn {
+    to {
+      stroke: #000;
+    }
+  }
+  text {
+    font-size: 1em;
+    text-anchor: middle;
+  }
+  .Spokes {
+    circle {
+      fill: rgba(255, 255, 255, 0);
+    }
+  }
 }
 
 #help {
-	position: fixed;
-	right: 0.5em;
-	bottom: 0.5em;
-	z-index: 10;
-	padding: 0.25em;
+  position: fixed;
+  right: 0.5em;
+  bottom: 0.5em;
+  z-index: 10;
+  padding: 0.25em;
 }
