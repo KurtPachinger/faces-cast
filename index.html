@@ -13,44 +13,45 @@
 <button id="help">Help</button>
 <main>
   <p class="err" id="errorMessage"></p>
-	<div class="w50">
+  <div class="w50">
     <input type="file" id="photo" name="file" accept="image/*" disabled class="w100" />
-	  <input id="maxsize" class="w100" type="range" min="128" max="768" step="128" value="384" />
-	</div>
+    <input id="maxsize" class="w100" type="range" min="128" max="768" step="128" value="384" />
+  </div>
   <fieldset id="default" class="w50">
     <legend>default color</legend>
     <label data-id="skin"><input type="color" data-id="skin" value="#add8e6" /></label>
-		<label data-id="lips"><input type="color" data-id="lips" value="#ff00ff" /></label>
+    <label data-id="lips"><input type="color" data-id="lips" value="#ff00ff" /></label>
     <label data-id="hair"><input type="color" data-id="hair" value="#ffc000" /></label>
     <label data-id="eye"><input type="color" data-id="eye" value="#c080ff" /></label>
     <label data-id="iris"><input type="color" data-id="iris" value="#00ff00" /></label>
     <!--ex: different color on second face-->
     <label data-id="f1_skin"><input type="color" data-id="f1_skin" value="#ffc080" /></label>
-		<label data-id="f1_lips"><input type="color" data-id="f1_lips" value="#ff4040" /></label>
-		<label data-id="f1_hair"><input type="color" data-id="f1_hair" value="#ff40ff" /></label>
-		<label data-id="bg" style="width:40%;"><input type="color" data-id="bg" value="#fff0c0" /></label>
+    <label data-id="f1_lips"><input type="color" data-id="f1_lips" value="#ff4040" /></label>
+    <label data-id="f1_hair"><input type="color" data-id="f1_hair" value="#ff40ff" /></label>
+    <label data-id="bg" style="width:40%;"><input type="color" data-id="bg" value="#fff0c0" /></label>
   </fieldset>
 
   <section data-load="load OpenCV" class="w100">
     <div class="w50" id="edit">
-			<label class="ui hide">&Cross;<input type="checkbox" id="abort" title="abort" /></label>
+      <label class="ui hide">&Cross;<input type="checkbox" id="abort" title="abort" /></label>
       <canvas id="roi" class='abs'></canvas>
-			<canvas id="color" class='abs'></canvas>
-		  <canvas id="depth" class='abs'></canvas>
-			<canvas id="chromaImg"></canvas>
+      <canvas id="color" class='abs'></canvas>
+      <canvas id="depth" class='abs'></canvas>
+      <canvas id="chromaImg"></canvas>
     </div>
-		<div class="w50" id="view">
-    <canvas id="chroma"></canvas>
-		<!--<canvas id="inpaint_pixi" class="abs"></canvas>-->
-		</div>
+    <div class="w50" id="view">
+      <canvas id="chroma"></canvas>
+      <!--<canvas id="inpaint_pixi" class="abs"></canvas>-->
+    </div>
   </section>
 
-<input id="col" type="range" max="2" value="0" />
-<div id="mask" class="w100 scroll col0"></div>
-<canvas id="eigen" class="w13" style="left:1em;background:transparent;"></canvas>
-<div id="wheel" class="w50 aligncenter"></div>
+  <input id="col" type="range" max="2" value="0" />
+  <div id="mask" class="w100 scroll col0"></div>
+  <canvas id="eigen" class="w13" style="left:1em;background:transparent;"></canvas>
+  <div id="wheel" class="w50 aligncenter"></div>
 
-	<details><pre>
+  <details>
+    <pre>
   <li class="w100"><a href="//techcrunch.com/2019/06/18/youtubes-new-ar-beauty-try-on-lets-viewers-virtually-try-on-makeup-while-watching-video-reviews/">YouTube AR Beauty Try-On</a></li><li><a href="https://lucid.app/documents/embeddedchart/9d72fa85-b820-4ce7-abdf-b7628f31e02c">lucidchart</a>
 1. upload photo (orient via loadimage)
 2. detect face(s) - set relative unit
@@ -62,108 +63,102 @@
 3. composite color mask (?)
 4. composite depth mask (PIXI)
 5. bar chart (normal) and hsl color wheel (d3)
-	</pre></details>
+	</pre>
+  </details>
 </main>
-	
 
 <script type="text/javascript">
-let driver;
-// Start the introduction
-document.querySelector('#help')
-	.addEventListener('click', function (e) {
-	e.preventDefault();
-	e.stopPropagation();
-	
-	if(driver==undefined){
-	  // lazy loading Help
-	  let css = document.createElement('link');
-	  css.href = 'https://unpkg.com/driver.js/dist/driver.min.css';
-	  css.rel = 'stylesheet';
-	  document.head.appendChild(css);
-	  let js = document.createElement('script');
-	  js.src = 'https://unpkg.com/driver.js/dist/driver.min.js';
-	  js.onload = function(){
-
-	
-      driver = new Driver();
-      // Define the steps for introduction
-      driver.defineSteps([
-        {
-        element: '#photo',
-        popover: {
-          title: 'Choose file [image or photo]',
-          description: 'Apply settings to faces in image. Progress displays with an &Cross; to abort. There is no dedicated update button.',
+  let driver;
+  // Start the introduction
+  document.querySelector('#help')
+    .addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (driver == undefined) {
+        // lazy loading Help
+        let css = document.createElement('link');
+        css.href = 'https://unpkg.com/driver.js/dist/driver.min.css';
+        css.rel = 'stylesheet';
+        document.head.appendChild(css);
+        let js = document.createElement('script');
+        js.src = 'https://unpkg.com/driver.js/dist/driver.min.js';
+        js.onload = function() {
+          driver = new Driver();
+          // Define the steps for introduction
+          driver.defineSteps([{
+              element: '#photo',
+              popover: {
+                title: 'Choose file [image or photo]',
+                description: 'Apply settings to faces in image. Progress displays with an &Cross; to abort. There is no dedicated update button.',
+              }
+            },
+            {
+              element: '#maxsize',
+              popover: {
+                title: 'Scale resolution  [slider]',
+                description: 'Lower setting completes faster. Higher setting finds more detail.',
+              }
+            },
+            {
+              element: '#default',
+              popover: {
+                title: 'Default color [input group]',
+                description: 'Multiply masks of matching id with color, or green for none. The background applies once to a composite, and is blurred.',
+              }
+            },
+            {
+              element: '#edit',
+              popover: {
+                title: 'Input [image]',
+                description: 'Feature masks\' sample areas. Hover cycles composites of color and depth.',
+              }
+            },
+            {
+              element: '#view',
+              popover: {
+                title: 'Output [image]',
+                description: 'Recolored image with interactive depth map.',
+              }
+            },
+            {
+              element: '#col',
+              popover: {
+                title: 'Zoom masks [slider]',
+                description: 'Adjust size of masks to inspect details.',
+              }
+            },
+            {
+              element: '#mask',
+              popover: {
+                title: 'Masks and palettes',
+                description: 'Hover color palette bar chart to highlight corresponding data on color wheel. <br />Masks show pixels within color range. Hover for mask probability refined by feature relationships. Click mask to pick new color.',
+              }
+            },
+            {
+              element: '#eigen',
+              popover: {
+                title: 'Eigenface',
+                description: 'Difference of multiple faces.',
+              }
+            },
+            {
+              element: '#wheel',
+              popover: {
+                title: 'Color wheel',
+                description: 'HSV normalized distribution.',
+              }
+            }
+          ]);
+          driver.start();
         }
-        },
-        {
-        element: '#maxsize',
-        popover: {
-          title: 'Scale resolution  [slider]',
-          description: 'Lower setting completes faster. Higher setting finds more detail.',
-        }
-        },
-        {
-        element: '#default',
-        popover: {
-          title: 'Default color [input group]',
-          description: 'Multiply masks of matching id with color, or green for none. The background applies once to a composite, and is blurred.',
-        }
-        },
-        {
-        element: '#edit',
-        popover: {
-          title: 'Input [image]',
-          description: 'Feature masks\' sample areas. Hover cycles composites of color and depth.',
-        }
-        },
-        {
-        element: '#view',
-        popover: {
-          title: 'Output [image]',
-          description: 'Recolored image with interactive depth map.',
-        }
-        },
-        {
-        element: '#col',
-        popover: {
-          title: 'Zoom masks [slider]',
-          description: 'Adjust size of masks to inspect details.',
-        }
-        },
-        {
-        element: '#mask',
-        popover: {
-          title: 'Masks and palettes',
-          description: 'Hover color palette bar chart to highlight corresponding data on color wheel. <br />Masks show pixels within color range. Hover for mask probability refined by feature relationships. Click mask to pick new color.',
-        }
-        },
-        {
-        element: '#eigen',
-        popover: {
-          title: 'Eigenface',
-          description: 'Difference of multiple faces.',
-        }
-        },
-        {
-        element: '#wheel',
-        popover: {
-          title: 'Color wheel',
-          description: 'HSV normalized distribution.',
-        }
-        }
-      ]);
-		  driver.start();
-	}
-	document.head.appendChild(js);
-		
-	}else{
-		driver.start();
-	}
-	
-});
+        document.head.appendChild(js);
+      } else {
+        driver.start();
+      }
+    });
 </script>
 <!-- partial -->
-  <script src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/697675/utils.js'></script>
+<script src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/697675/utils.js'></script>
 <script src='https://rawgit.com/blueimp/JavaScript-Load-Image/master/js/load-image.all.min.js'></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/6.6.2/d3.min.js'></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.3.3/pixi.min.js'></script><script  src="./script.js"></script>
