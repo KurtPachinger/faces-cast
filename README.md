@@ -1,5 +1,5 @@
 # faces-chroma
-https://app.lucidchart.com/users/login#?folder_id=215746264&preview=215746264
+https://lucid.app/documents/embeddedchart/9d72fa85-b820-4ce7-abdf-b7628f31e02c
 - upload photo (orient via LoadImage)
 - detect face(s) - set relative unit
   - get foreground/background (grabcut)
